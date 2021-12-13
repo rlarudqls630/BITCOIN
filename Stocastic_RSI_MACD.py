@@ -165,7 +165,7 @@ if __name__ == '__main__':
         if (price_data[0][4] * free_coin >= 10):
             sell_check(i)
 
-    while True:
+    while False:
         for i in coin_to_trade:
             bars = binance.fetch_ohlcv(i, interval, limit=200)
             df = pd.DataFrame(
