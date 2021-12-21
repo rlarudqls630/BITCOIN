@@ -10,6 +10,7 @@ from os import path
 from datetime import datetime as dt
 from ta.momentum import RSIIndicator, StochasticOscillator
 from ta.trend import MACD
+from datetime import datetime
 
 
 def sell_check(coin_name):
@@ -214,6 +215,13 @@ if __name__ == '__main__':
                             swing_low = open('swing_low.txt', 'w')
                             swing_low.write(str(swing_low_price))
                             swing_low.close()
-                            buy(i)
+                            last_trading_date = open('last_date.txt', 'r')
+                            last_date = str(last_trading_date)
+                            last_trading_date.cloe()
+                            if last_date != str(datetime.now().strftime("%d")):
+                                last_trading_date = open('last_date.txt', 'w')
+                                last_trading_date.write(str(datetime.now().strftime("%d")))
+                                last_trading_date.close()
+                                buy(i)
             print('---------------------------------------')
             print('')
