@@ -17,7 +17,7 @@ def sell_check(coin_name):
     swing_low = open('swing_low.txt', 'rt')
     stop_lose = float(swing_low.readline())
     swing_low.close()
-    profit_sell_val = stop_lose * 1.3
+    profit_sell_val = stop_lose * 1.5
 
     balance = binance.fetch_balance()
 
@@ -46,14 +46,13 @@ def sell_check(coin_name):
         print('Stochast_k  : ' + str(stochast_k.iloc[-1]))
         print('Stochast_b  : ' + str(stochast_d.iloc[-1]))
         print('')
-        print('Profit_sell : ' + str(profit_sell_val))
+        print('Profit_sell : $' + str(profit_sell_val))
         print('---------------------------------------')
-        if stochast_k.iloc[-1] >= 75:
-            if rsi_val.iloc[-1] >= 50:
-                sell(coin_name)
-        elif stochast_d.iloc[-1] >= 75:
-            if rsi_val.iloc[-1] >= 50:
-                sell(coin_name)
+        
+        if rsi_val.iloc[-1] >= 75:
+            if stochast_k.iloc[-1] >= 80:
+                if stochast_d.iloc[-1] >= 80:
+                    sell(coin_name)
         elif sell_book['asks'][0][0] >= profit_sell_val:
             sell(coin_name)
         elif sell_book['asks'][0][0] <= stop_lose:
@@ -114,6 +113,9 @@ def sell(coin_name):
         bal = bal['free']['USDT']
         text = coin_name + '\n매도: $' + str(round(bal, 2))
         post_message(slack_token, "#bitcoin", text)
+        
+        post_message(slack_token, "#bitcoin", 'Profit made, sleeping for 30m')
+        time.sleep(1800)
 
 
 def sell_cancel(coin_name):
@@ -201,27 +203,19 @@ if __name__ == '__main__':
                 print('CASE 1: RSI OVER 50')
                 if MACD_diff_val.iloc[-1] >= MACD_signal_val.iloc[-1]:
                     print('CASE 2: MACD_D > MACD_S')
-                    if stochast_k.iloc[-1] <= 75 and stochast_d.iloc[-1] <= 75:
-                        if stochast_k.iloc[-1] >= 20 and stochast_d.iloc[-1] >= 20:
-                            print('CASEE 3: 20 < STOCAST < 80')
-                            swing_low_price = min(
-                                df.iloc[-2]['close'], df.iloc[-2]['open'])
-                            for j in range(30):
-                                if swing_low_price >= min(df.iloc[(j + 2) * -1]['close'], df.iloc[(j + 2) * -1]['open']):
-                                    swing_low_price = min(
-                                        df.iloc[(j + 2) * -1]['close'], df.iloc[(j + 2) * -1]['open'])
-                                else:
-                                    break
-                            swing_low = open('swing_low.txt', 'w')
-                            swing_low.write(str(swing_low_price))
-                            swing_low.close()
-                            last_trading_date = open('last_date.txt', 'r')
-                            last_date = str(last_trading_date)
-                            last_trading_date.cloe()
-                            if last_date != str(datetime.now().strftime("%d")):
-                                last_trading_date = open('last_date.txt', 'w')
-                                last_trading_date.write(str(datetime.now().strftime("%d")))
-                                last_trading_date.close()
-                                buy(i)
+                    if stochast_k.iloc[-1] <= 80 and stochast_d.iloc[-1] <= 80:
+                        print('CASEE 3: STOCHASTIC < 80')
+                        swing_low_price = min(
+                            df.iloc[-2]['close'], df.iloc[-2]['open'])
+                        for j in range(30):
+                            if swing_low_price >= min(df.iloc[(j + 2) * -1]['close'], df.iloc[(j + 2) * -1]['open']):
+                                swing_low_price = min(
+                                    df.iloc[(j + 2) * -1]['close'], df.iloc[(j + 2) * -1]['open'])
+                            else:
+                                break
+                        swing_low = open('swing_low.txt', 'w')
+                        swing_low.write(str(swing_low_price))
+                        swing_low.close()
+                        buy(i)
             print('---------------------------------------')
             print('')
