@@ -43,9 +43,11 @@ if __name__ == '__main__':
     interval = data.split('\n')[3]
 
     all_binance_market = binance.fetch_markets()
-    for i in all_binance_market:
-        if i['symbol'] == 'EOS/USDT':
-            print(i['limits']['amount']['min'])
+    last_bought = open('last_bought.txt', 'r')
+    last_bought_coin = str(last_bought.readline())
+    last_bought.close()
+
+    print(last_bought_coin)
     # usdt_volume_checker = []
     # for i in all_binance_market:
     #     # pprint(i['limits']['amount']['min'])
