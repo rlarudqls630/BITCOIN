@@ -105,7 +105,8 @@ def possible_pump():
                         if temp[2][1] >= temp[1][1] >= temp[0][1]:
                             symbol_volume = (i['symbol'], 100-100 /
                                              temp[1][5]*temp[0][5])
-                            usdt_volume_checker.append(symbol_volume)
+                            if 'MARKET' in i['info']['orderTypes']:
+                                usdt_volume_checker.append(symbol_volume)
 
     usdt_volume_checker.sort(key=lambda x: x[1], reverse=True)
     trading_coins = []

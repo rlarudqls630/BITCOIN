@@ -43,32 +43,9 @@ if __name__ == '__main__':
     interval = data.split('\n')[3]
 
     all_binance_market = binance.fetch_markets()
-    last_bought = open('last_bought.txt', 'r')
-    last_bought_coin = str(last_bought.readline())
-    last_bought.close()
-
-    print(last_bought_coin)
-    # usdt_volume_checker = []
-    # for i in all_binance_market:
-    #     # pprint(i['limits']['amount']['min'])
-    #     if i['symbol'][-4:] == 'USDT':
-    #         if i['symbol'][0:2] != 'USD':
-    #             temp = binance.fetch_ohlcv(i['symbol'], '12h', limit=3)
-    #             print('Checking ' + str(i['symbol']))
-    #             if temp[1][5] >= temp[0][5]:
-    #                 if temp[2][1] >= temp[1][1] >= temp[0][1]:
-    #                     symbol_volume = (i['symbol'], 100-100 /
-    #                                      temp[1][5]*temp[0][5])
-    #                     usdt_volume_checker.append(symbol_volume)
-
-    # usdt_volume_checker.sort(key=lambda x: x[1], reverse=True)
-    # trading_coins = []
-
-    # if len(usdt_volume_checker) >= 30:
-    #     for i in range(30):
-    #         trading_coins.append(usdt_volume_checker[i][0])
-    #     print(trading_coins)
-    # else:
-    #     for i in usdt_volume_checker:
-    #         trading_coins.append(usdt_volume_checker[i][0])
-    #     print(trading_coins)
+    usdt_volume_checker = []
+    for i in all_binance_market:
+        if i['symbol'][-4:] == 'USDT':
+            if i['symbol'][0:2] != 'USD':
+                if 'MARKET' in i['info']['orderTypes']:
+                    pprint(i)
