@@ -100,24 +100,26 @@ def possible_pump():
             if i['symbol'][0:2] != 'USD':
                 temp = binance.fetch_ohlcv(i['symbol'], '12h', limit=3)
                 print('Checking ' + str(i['symbol']))
-                if temp[1][5] >= temp[0][5]:
-                    if temp[2][1] >= temp[1][1] >= temp[0][1]:
-                        symbol_volume = (i['symbol'], 100-100 /
-                                         temp[1][5]*temp[0][5])
-                        usdt_volume_checker.append(symbol_volume)
+                if len(temp) >= 3:
+                    if temp[1][5] >= temp[0][5]:
+                        if temp[2][1] >= temp[1][1] >= temp[0][1]:
+                            symbol_volume = (i['symbol'], 100-100 /
+                                             temp[1][5]*temp[0][5])
+                            usdt_volume_checker.append(symbol_volume)
 
     usdt_volume_checker.sort(key=lambda x: x[1], reverse=True)
     trading_coins = []
 
+    print('Possible pumps: ' + len(usdt_volume_checker) + ' items')
     if len(usdt_volume_checker) >= 30:
         for i in range(30):
             trading_coins.append(usdt_volume_checker[i][0])
-        pprint(trading_coins)
+        print(trading_coins)
         return trading_coins
     else:
         for i in usdt_volume_checker:
             trading_coins.append(usdt_volume_checker[i][0])
-        pprint(trading_coins)
+        print(trading_coins)
         return trading_coins
 
 
