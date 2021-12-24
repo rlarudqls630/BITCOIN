@@ -13,6 +13,35 @@ from ta.trend import MACD
 from datetime import datetime
 
 
+def buy_check(coin_name, rsi_val, MACD_diff_val, MACD_signal_val, stochast_k, stochast_d, df):
+    # entry signal
+    if rsi_val.iloc[-1] >= 50:
+        print('')
+        print('CASE 1: RSI OVER 50')
+        if MACD_diff_val.iloc[-1] >= MACD_signal_val.iloc[-1]:
+            print('CASE 2: MACD_D > MACD_S')
+            if stochast_k.iloc[-1] <= 80 and stochast_d.iloc[-1] <= 80:
+                print('CASEE 3: STOCHASTIC < 80')
+                swing_low_price = min(
+                    df.iloc[-2]['close'], df.iloc[-2]['open'])
+                for j in range(30):
+                    if swing_low_price >= min(df.iloc[(j + 2) * -1]['close'], df.iloc[(j + 2) * -1]['open']):
+                        swing_low_price = min(
+                            df.iloc[(j + 2) * -1]['close'], df.iloc[(j + 2) * -1]['open'])
+                    else:
+                        break
+                swing_low = open('swing_low.txt', 'w')
+                swing_low.write(str(swing_low_price))
+                swing_low.close()
+
+                last_bought = open('last_bought.txt', 'r')
+                last_bought_coin = str(last_bought.readline())
+                last_bought.close()
+
+                if last_bought_coin != coin_name:
+                    buy(coin_name)
+
+
 def sell_check(coin_name):
     swing_low = open('swing_low.txt', 'rt')
     stop_lose = float(swing_low.readline())
@@ -48,16 +77,44 @@ def sell_check(coin_name):
         print('')
         print('Profit_sell : $' + str(profit_sell_val))
         print('---------------------------------------')
-        
+
         if rsi_val.iloc[-1] >= 75:
-            if stochast_k.iloc[-1] >= 80:
-                if stochast_d.iloc[-1] >= 80:
-                    sell(coin_name)
+            sell(coin_name)
+        elif stochast_k.iloc[-1] >= 80 and stochast_d.iloc[-1] >= 80:
+            sell(coin_name)
         elif sell_book['asks'][0][0] >= profit_sell_val:
             sell(coin_name)
         elif sell_book['asks'][0][0] <= stop_lose:
             sell(coin_name)
         balance = binance.fetch_balance()
+
+
+def possible_pump():
+    all_binance_market = binance.fetch_markets()
+    usdt_volume_checker = []
+    for i in all_binance_market:
+        # pprint(i['limits']['amount']['min'])
+        if i['symbol'][-4:] == 'USDT':
+            if i['symbol'][0:2] != 'USD':
+                temp = binance.fetch_ohlcv(i['symbol'], '12h', limit=3)
+                print('Checking ' + str(i['symbol']))
+                if temp[1][5] >= temp[0][5]:
+                    if temp[2][1] >= temp[1][1] >= temp[0][1]:
+                        symbol_volume = (i['symbol'], 100-100 /
+                                         temp[1][5]*temp[0][5])
+                        usdt_volume_checker.append(symbol_volume)
+
+    usdt_volume_checker.sort(key=lambda x: x[1], reverse=True)
+    trading_coins = []
+
+    if len(usdt_volume_checker) >= 30:
+        for i in range(30):
+            trading_coins.append(usdt_volume_checker[i][0])
+        return trading_coins
+    else:
+        for i in usdt_volume_checker:
+            trading_coins.append(usdt_volume_checker[i][0])
+        return trading_coins
 
 
 def buy(coin_name):
@@ -93,9 +150,10 @@ def buy_cancel(coin_name):
 def sell(coin_name):
     sell_coin = coin_name[:-5]
 
-    minimum_trade_file = pd.read_csv('minimum_trade.csv')
-    amount = float(
-        minimum_trade_file.loc[minimum_trade_file['coin'] == sell_coin, 'minimum'])
+    all_binance_market = binance.fetch_markets()
+    for i in all_binance_market:
+        if i['symbol'] == 'EOS/USDT':
+            amount = i['limits']['amount']['min']
 
     # 발랜스 보고 코인으로 잔고가 있으면 호가 매도
     balance = binance.fetch_balance()
@@ -113,7 +171,7 @@ def sell(coin_name):
         bal = bal['free']['USDT']
         text = coin_name + '\n매도: $' + str(round(bal, 2))
         post_message(slack_token, "#bitcoin", text)
-        
+
         post_message(slack_token, "#bitcoin", 'Profit made, sleeping for 30m')
         time.sleep(1800)
 
@@ -133,42 +191,33 @@ def post_message(token, channel, text):
 
 
 if __name__ == '__main__':
+    # key file read (binance token, secret token, slack token, timeframe)
     f = open('key.txt', 'r')
     data = f.read()
     f.close()
 
-    # first & second line of key.txt = binance key
+    # first & second line of key.txt = binance key, secret token
     binance = ccxt.binance(config={'apiKey': data.split('\n')[
         0], 'secret': data.split('\n')[1]})
 
-    # second line of key.txt = slack token
+    # third line of key.txt = slack token
     slack_token = data.split('\n')[2]
 
-    # third line of key.txt = coins to trade
-    coin_to_trade = []
-    temp = ''
-    for i in data.split('\n')[3]:
-        if i != ',':
-            temp = temp + i
-        else:
-            temp = temp[:-4] + '/' + temp[-4:]
-            coin_to_trade.append(temp)
-            temp = ''
-    temp = temp[:-4] + '/' + temp[-4:]
-    coin_to_trade.append(temp)
-
     # interval check
-    interval = data.split('\n')[4]
+    interval = data.split('\n')[3]
 
-    # when error occured and restarted program use this to go to con_trade
-    for i in coin_to_trade:
-        balance = binance.fetch_balance()
-        price_data = binance.fetch_ohlcv(i, interval, limit=1)
-        free_coin = balance['free'][i[:-5]]
-        if (price_data[0][4] * free_coin >= 10):
-            sell_check(i)
+    # when error occured and restarted program use this to go to sell_check
+    balance = binance.fetch_balance()
+    for i in balance['free']:
+        if balance['free'][i] > 0 and i != 'USDT':
+            price_data = binance.fetch_ohlcv(i + '/USDT', interval, limit=1)
+            if price_data[0][4] * balance['free'][i] > 10:
+                sell_check(i + '/USDT')
 
     while True:
+        # find coins that might pump
+        coin_to_trade = possible_pump()
+
         for i in coin_to_trade:
             bars = binance.fetch_ohlcv(i, interval, limit=200)
             df = pd.DataFrame(
@@ -196,26 +245,8 @@ if __name__ == '__main__':
             print('RSI        : ' + str(rsi_val.iloc[-1]))
             print('MACD_Diff  : ' + str(MACD_diff_val.iloc[-1]))
             print('MACD_Signal: ' + str(MACD_signal_val.iloc[-1]))
-
-            # entry signal
-            if rsi_val.iloc[-1] >= 50:
-                print('')
-                print('CASE 1: RSI OVER 50')
-                if MACD_diff_val.iloc[-1] >= MACD_signal_val.iloc[-1]:
-                    print('CASE 2: MACD_D > MACD_S')
-                    if stochast_k.iloc[-1] <= 80 and stochast_d.iloc[-1] <= 80:
-                        print('CASEE 3: STOCHASTIC < 80')
-                        swing_low_price = min(
-                            df.iloc[-2]['close'], df.iloc[-2]['open'])
-                        for j in range(30):
-                            if swing_low_price >= min(df.iloc[(j + 2) * -1]['close'], df.iloc[(j + 2) * -1]['open']):
-                                swing_low_price = min(
-                                    df.iloc[(j + 2) * -1]['close'], df.iloc[(j + 2) * -1]['open'])
-                            else:
-                                break
-                        swing_low = open('swing_low.txt', 'w')
-                        swing_low.write(str(swing_low_price))
-                        swing_low.close()
-                        buy(i)
             print('---------------------------------------')
             print('')
+
+            buy_check(i, rsi_val, MACD_diff_val,
+                      MACD_signal_val, stochast_k, stochast_d, df)
