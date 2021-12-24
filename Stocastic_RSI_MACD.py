@@ -92,8 +92,8 @@ def sell_check(coin_name):
 def possible_pump():
     all_binance_market = binance.fetch_markets()
     usdt_volume_checker = []
+
     for i in all_binance_market:
-        # pprint(i['limits']['amount']['min'])
         if i['symbol'][-4:] == 'USDT':
             if i['symbol'][0:2] != 'USD':
                 temp = binance.fetch_ohlcv(i['symbol'], '12h', limit=3)
@@ -137,6 +137,10 @@ def buy(coin_name):
             str(round(bal, 2)) + '\n매수 가격: $' + str(orderbook['bids'][0][0])
         post_message(slack_token, "#bitcoin", text)
 
+        last_bought = open('last_bought.txt', 'w')
+        last_bought.write(str(coin_name))
+        last_bought.close()
+
         sell_check(coin_name)
 
 
@@ -152,7 +156,7 @@ def sell(coin_name):
 
     all_binance_market = binance.fetch_markets()
     for i in all_binance_market:
-        if i['symbol'] == 'EOS/USDT':
+        if i['symbol'] == coin_name:
             amount = i['limits']['amount']['min']
 
     # 발랜스 보고 코인으로 잔고가 있으면 호가 매도
@@ -171,9 +175,6 @@ def sell(coin_name):
         bal = bal['free']['USDT']
         text = coin_name + '\n매도: $' + str(round(bal, 2))
         post_message(slack_token, "#bitcoin", text)
-
-        post_message(slack_token, "#bitcoin", 'Profit made, sleeping for 30m')
-        time.sleep(1800)
 
 
 def sell_cancel(coin_name):
@@ -245,8 +246,8 @@ if __name__ == '__main__':
             print('RSI        : ' + str(rsi_val.iloc[-1]))
             print('MACD_Diff  : ' + str(MACD_diff_val.iloc[-1]))
             print('MACD_Signal: ' + str(MACD_signal_val.iloc[-1]))
-            print('---------------------------------------')
             print('')
-
             buy_check(i, rsi_val, MACD_diff_val,
                       MACD_signal_val, stochast_k, stochast_d, df)
+            print('---------------------------------------')
+            print('')
