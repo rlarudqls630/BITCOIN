@@ -110,7 +110,7 @@ def possible_pump():
     usdt_volume_checker.sort(key=lambda x: x[1], reverse=True)
     trading_coins = []
 
-    print('Possible pumps: ' + len(usdt_volume_checker) + ' items')
+    print('Possible pumps: ' + str(len(usdt_volume_checker)) + ' items')
     if len(usdt_volume_checker) >= 30:
         for i in range(30):
             trading_coins.append(usdt_volume_checker[i][0])
