@@ -5,7 +5,9 @@ import ccxt
 import time
 import requests
 import ta
+import pprint
 
+from pprint import pprint
 from os import path
 from datetime import datetime as dt
 from ta.momentum import RSIIndicator, StochasticOscillator
@@ -110,10 +112,12 @@ def possible_pump():
     if len(usdt_volume_checker) >= 30:
         for i in range(30):
             trading_coins.append(usdt_volume_checker[i][0])
+        pprint(trading_coins)
         return trading_coins
     else:
         for i in usdt_volume_checker:
             trading_coins.append(usdt_volume_checker[i][0])
+        pprint(trading_coins)
         return trading_coins
 
 
