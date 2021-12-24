@@ -220,7 +220,8 @@ if __name__ == '__main__':
         if balance['free'][i] > 0 and i != 'USDT':
             price_data = binance.fetch_ohlcv(i + '/USDT', interval, limit=1)
             if price_data[0][4] * balance['free'][i] > 10:
-                sell_check(i + '/USDT')
+                i = i + '/USDT'
+                sell_check(i)
 
     while True:
         # find coins that might pump
