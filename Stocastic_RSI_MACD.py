@@ -98,7 +98,7 @@ def possible_pump():
     for i in all_binance_market:
         if i['symbol'][-4:] == 'USDT':
             if i['symbol'][0:2] != 'USD':
-                temp = binance.fetch_ohlcv(i['symbol'], '12h', limit=3)
+                temp = binance.fetch_ohlcv(i['symbol'], interval, limit=3)
                 print('Checking ' + str(i['symbol']))
                 if len(temp) >= 3:
                     if temp[1][5] >= temp[0][5]:
