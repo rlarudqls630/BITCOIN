@@ -66,9 +66,12 @@ def sell_check(coin_name):
         stochast_k = stochast_indicator.stoch()
         stochast_d = stochast_indicator.stoch_signal()
 
+        balance = binance.fetch_balance()
         print('---------------------------------------')
         print(dt.now().strftime('%Y-%m-%d %H:%M:%S'))
         print('%s__TRADING' % coin_name)
+        print('')
+        print('Balance     : $' + str(bars[0][4] * balance['free'][coin_name[:-5]]))
         print('')
         print('Current ask : $' + str(sell_book['asks'][0][0]))
         print('')
