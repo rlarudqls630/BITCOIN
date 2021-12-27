@@ -5,7 +5,6 @@ import ccxt
 import time
 import requests
 import ta
-import pprint
 
 from pprint import pprint
 from os import path
@@ -100,7 +99,7 @@ def possible_pump():
 
     for i in all_binance_market:
         if i['symbol'][-4:] == 'USDT':
-            if i['symbol'][0:2] != 'USD':
+            if i['symbol'][0:3] != 'USD':
                 temp = binance.fetch_ohlcv(i['symbol'], interval, limit=3)
                 print('Checking ' + str(i['symbol']))
                 if len(temp) >= 3:
@@ -115,9 +114,9 @@ def possible_pump():
     trading_coins = []
 
     for i in usdt_volume_checker:
-        if i[1] > 0:
+        if i[1] > 15 and i[2] > 1000000:
             trading_coins.append(i[0])
-    
+
     return trading_coins
 
 

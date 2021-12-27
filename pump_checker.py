@@ -44,6 +44,28 @@ if __name__ == '__main__':
 
 
     #code testing starts 
-    balance = binance.fetch_balance()
-    bars = binance.fetch_ohlcv('LPT/USDT', interval, limit=200)
-    pprint(balance['free']['LPT'] * bars[-1][4])
+    all_binance_market = binance.fetch_markets()
+    usdt_volume_checker = []
+
+    for i in all_binance_market:
+        if i['symbol'][-4:] == 'USDT':
+            if str(i['symbol'][0:3]) != 'USD':
+                temp = binance.fetch_ohlcv(i['symbol'], interval, limit=3)
+                print('Checking ' + str(i['symbol']))
+                if len(temp) >= 3:
+                    if temp[1][5] >= temp[0][5]:
+                        if temp[2][1] >= temp[1][1] >= temp[0][1]:
+                            symbol_volume = (i['symbol'], 100-100 /
+                                             temp[1][5]*temp[0][5], temp[0][5])
+                            if 'MARKET' in i['info']['orderTypes']:
+                                usdt_volume_checker.append(symbol_volume)
+
+    usdt_volume_checker.sort(key=lambda x: -x[2])
+    trading_coins = []
+    
+    for i in usdt_volume_checker:
+        if i[1] > 15 and i[2] > 1000000:
+            trading_coins.append(i[0])
+    pprint(usdt_volume_checker)
+    pprint(trading_coins)
+    
