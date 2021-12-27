@@ -15,7 +15,7 @@ from ta.trend import MACD
 from datetime import datetime
 
 if __name__ == '__main__':
-    f = open('key.txt', 'r')
+    f = open('./BITCOIN/key.txt', 'r')
     data = f.read()
     f.close()
 
@@ -42,10 +42,8 @@ if __name__ == '__main__':
     # interval check
     interval = data.split('\n')[3]
 
-    all_binance_market = binance.fetch_markets()
-    usdt_volume_checker = []
-    for i in all_binance_market:
-        if i['symbol'][-4:] == 'USDT':
-            if i['symbol'][0:2] != 'USD':
-                if 'MARKET' in i['info']['orderTypes']:
-                    pprint(i)
+
+    #code testing starts 
+    balance = binance.fetch_balance()
+    bars = binance.fetch_ohlcv('LPT/USDT', interval, limit=200)
+    pprint(balance['free']['LPT'] * bars[-1][4])

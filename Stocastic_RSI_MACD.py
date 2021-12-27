@@ -71,7 +71,7 @@ def sell_check(coin_name):
         print(dt.now().strftime('%Y-%m-%d %H:%M:%S'))
         print('%s__TRADING' % coin_name)
         print('')
-        print('Balance     : $' + str(bars[0][4] * balance['free'][coin_name[:-5]]))
+        print('Balance     : $' + str(bars[-1][4] * balance['free'][coin_name[:-5]]))
         print('')
         print('Current ask : $' + str(sell_book['asks'][0][0]))
         print('')
