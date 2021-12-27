@@ -107,24 +107,18 @@ def possible_pump():
                     if temp[1][5] >= temp[0][5]:
                         if temp[2][1] >= temp[1][1] >= temp[0][1]:
                             symbol_volume = (i['symbol'], 100-100 /
-                                             temp[1][5]*temp[0][5])
+                                             temp[1][5]*temp[0][5], temp[0][5])
                             if 'MARKET' in i['info']['orderTypes']:
                                 usdt_volume_checker.append(symbol_volume)
 
-    usdt_volume_checker.sort(key=lambda x: x[1], reverse=True)
+    usdt_volume_checker.sort(key=lambda x: -x[2])
     trading_coins = []
 
-    print('Possible pumps: ' + str(len(usdt_volume_checker)) + ' items')
-    if len(usdt_volume_checker) >= 30:
-        for i in range(30):
-            trading_coins.append(usdt_volume_checker[i][0])
-        print(trading_coins)
-        return trading_coins
-    else:
-        for i in usdt_volume_checker:
-            trading_coins.append(usdt_volume_checker[i][0])
-        print(trading_coins)
-        return trading_coins
+    for i in usdt_volume_checker:
+        if i[1] > 0:
+            trading_coins.append(i[0])
+    
+    return trading_coins
 
 
 def buy(coin_name):
