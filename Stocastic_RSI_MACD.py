@@ -21,7 +21,7 @@ def buy_check(coin_name, rsi_val, MACD_diff_val, MACD_signal_val, stochast_k, st
         print('CASE 1: RSI OVER 50')
         if MACD_diff_val.iloc[-1] >= MACD_signal_val.iloc[-1]:
             print('CASE 2: MACD_D > MACD_S')
-            if stochast_k.iloc[-1] <= 80 and stochast_d.iloc[-1] <= 80:
+            if 20 <= stochast_k.iloc[-1] <= 80 and 20 <= stochast_d.iloc[-1] <= 80:
                 print('CASEE 3: STOCHASTIC < 80')
                 swing_low_price = min(
                     df.iloc[-2]['close'], df.iloc[-2]['open'])
@@ -82,9 +82,9 @@ def sell_check(coin_name):
         print('Profit_sell : $' + str(profit_sell_val))
         print('---------------------------------------')
 
-        if rsi_val.iloc[-1] >= 75:
+        if rsi_val.iloc[-1] >= 70:
             sell(coin_name)
-        elif stochast_k.iloc[-1] >= 80 and stochast_d.iloc[-1] >= 80:
+        elif stochast_k.iloc[-1] >= 80 or stochast_d.iloc[-1] >= 80:
             sell(coin_name)
         elif sell_book['asks'][0][0] >= profit_sell_val:
             sell(coin_name)
