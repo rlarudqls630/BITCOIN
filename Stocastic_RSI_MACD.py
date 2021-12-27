@@ -41,7 +41,7 @@ def buy_check(coin_name, rsi_val, MACD_diff_val, MACD_signal_val, stochast_k, st
                 last_bought.close()
 
                 if last_bought_coin != coin_name:
-                    buy(coin_name)
+                    return True
 
 
 def sell_check(coin_name):
@@ -226,8 +226,12 @@ if __name__ == '__main__':
     while True:
         # find coins that might pump
         coin_to_trade = possible_pump()
+        coin_length = 0
 
-        for i in coin_to_trade:
+        bought = False
+        while bought is False:
+            i = coin_to_trade[coin_length]
+
             bars = binance.fetch_ohlcv(i, interval, limit=200)
             df = pd.DataFrame(
                 bars, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
@@ -255,7 +259,13 @@ if __name__ == '__main__':
             print('MACD_Diff  : ' + str(MACD_diff_val.iloc[-1]))
             print('MACD_Signal: ' + str(MACD_signal_val.iloc[-1]))
             print('')
-            buy_check(i, rsi_val, MACD_diff_val,
+            bought = buy_check(i, rsi_val, MACD_diff_val,
                       MACD_signal_val, stochast_k, stochast_d, df)
+            if bought:
+                buy(coin_to_trade[coin_length])
             print('---------------------------------------')
             print('')
+
+            coin_length = coin_length + 1
+            if coin_length >= len(coin_to_trade):
+                bought = True
