@@ -104,17 +104,16 @@ def possible_pump():
                 print('Checking ' + str(i['symbol']))
                 if len(temp) >= 3:
                     if temp[1][5] >= temp[0][5]:
-                        if temp[2][1] >= temp[1][1] >= temp[0][1]:
-                            symbol_volume = (i['symbol'], 100-100 /
-                                             temp[1][5]*temp[0][5], temp[0][5])
+                        if temp[0][1] >= temp[0][4] and temp[1][1] >= temp[0][4]:
+                            symbol_volume = (i['symbol'], 100 / temp[0][5]*temp[1][5], temp[1][5] - temp[0][5])
                             if 'MARKET' in i['info']['orderTypes']:
                                 usdt_volume_checker.append(symbol_volume)
 
-    usdt_volume_checker.sort(key=lambda x: -x[2])
+    usdt_volume_checker.sort(key=lambda x: -x[1])
     trading_coins = []
 
     for i in usdt_volume_checker:
-        if i[1] > 15 and i[2] > 1000000:
+        if i[1] > 100:
             trading_coins.append(i[0])
 
     return trading_coins
@@ -223,45 +222,47 @@ if __name__ == '__main__':
         # find coins that might pump
         coin_to_trade = possible_pump()
         coin_length = 0
+        if len(coin_to_trade) != 0:
+            bought = False
+            while bought is False:
+                i = coin_to_trade[coin_length]
 
-        bought = False
-        while bought is False:
-            i = coin_to_trade[coin_length]
+                bars = binance.fetch_ohlcv(i, interval, limit=200)
+                df = pd.DataFrame(
+                    bars, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
 
-            bars = binance.fetch_ohlcv(i, interval, limit=200)
-            df = pd.DataFrame(
-                bars, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+                rsi_indicator = RSIIndicator(df['close'])
+                rsi_val = rsi_indicator.rsi()
 
-            rsi_indicator = RSIIndicator(df['close'])
-            rsi_val = rsi_indicator.rsi()
+                MACD_indicator = MACD(
+                    df['close'], window_slow=21, window_fast=8, window_sign=5)
+                MACD_signal_val = MACD_indicator.macd_signal()
+                MACD_diff_val = MACD_indicator.macd_diff()
 
-            MACD_indicator = MACD(
-                df['close'], window_slow=21, window_fast=8, window_sign=5)
-            MACD_signal_val = MACD_indicator.macd_signal()
-            MACD_diff_val = MACD_indicator.macd_diff()
+                stochast_indicator = StochasticOscillator(
+                    df['high'], df['low'], df['close'])
+                stochast_k = stochast_indicator.stoch()
+                stochast_d = stochast_indicator.stoch_signal()
 
-            stochast_indicator = StochasticOscillator(
-                df['high'], df['low'], df['close'])
-            stochast_k = stochast_indicator.stoch()
-            stochast_d = stochast_indicator.stoch_signal()
+                print('---------------------------------------')
+                print(dt.now().strftime('%Y-%m-%d %H:%M:%S'))
+                print('%s__TRADING' % i)
+                print('')
+                print('Stochast_K : ' + str(stochast_k.iloc[-1]))
+                print('Stochast_D : ' + str(stochast_d.iloc[-1]))
+                print('RSI        : ' + str(rsi_val.iloc[-1]))
+                print('MACD_Diff  : ' + str(MACD_diff_val.iloc[-1]))
+                print('MACD_Signal: ' + str(MACD_signal_val.iloc[-1]))
+                print('')
+                bought = buy_check(i, rsi_val, MACD_diff_val,
+                        MACD_signal_val, stochast_k, stochast_d, df)
+                if bought:
+                    buy(coin_to_trade[coin_length])
+                print('---------------------------------------')
+                print('')
 
-            print('---------------------------------------')
-            print(dt.now().strftime('%Y-%m-%d %H:%M:%S'))
-            print('%s__TRADING' % i)
-            print('')
-            print('Stochast_K : ' + str(stochast_k.iloc[-1]))
-            print('Stochast_D : ' + str(stochast_d.iloc[-1]))
-            print('RSI        : ' + str(rsi_val.iloc[-1]))
-            print('MACD_Diff  : ' + str(MACD_diff_val.iloc[-1]))
-            print('MACD_Signal: ' + str(MACD_signal_val.iloc[-1]))
-            print('')
-            bought = buy_check(i, rsi_val, MACD_diff_val,
-                      MACD_signal_val, stochast_k, stochast_d, df)
-            if bought:
-                buy(coin_to_trade[coin_length])
-            print('---------------------------------------')
-            print('')
-
-            coin_length = coin_length + 1
-            if coin_length >= len(coin_to_trade):
-                bought = True
+                coin_length = coin_length + 1
+                if coin_length >= len(coin_to_trade):
+                    bought = True
+        else:
+            print('NO COIN PUMP YET')
