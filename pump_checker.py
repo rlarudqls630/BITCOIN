@@ -42,11 +42,9 @@ if __name__ == '__main__':
     # interval check
     interval = data.split('\n')[3]
 
-
-    #code testing starts 
+    # code testing starts
     all_binance_market = binance.fetch_markets()
     usdt_volume_checker = []
 
-    k = binance.fetch_ohlcv('BTC/USDT', '1m', limit= 3)
+    k = binance.fetch_ohlcv('BTC/USDT', '1m', limit=3)
     pprint(k)
-    pprint(100/k[0][5]*k[1][5])

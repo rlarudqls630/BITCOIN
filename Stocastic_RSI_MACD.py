@@ -70,7 +70,8 @@ def sell_check(coin_name):
         print(dt.now().strftime('%Y-%m-%d %H:%M:%S'))
         print('%s__TRADING' % coin_name)
         print('')
-        print('Balance     : $' + str(bars[-1][4] * balance['free'][coin_name[:-5]]))
+        print('Balance     : $' +
+              str(bars[-1][4] * balance['free'][coin_name[:-5]]))
         print('')
         print('Current ask : $' + str(sell_book['asks'][0][0]))
         print('')
@@ -105,9 +106,11 @@ def possible_pump():
                 if len(temp) >= 3:
                     if temp[1][5] >= temp[0][5]:
                         if temp[0][1] >= temp[0][4] and temp[1][1] >= temp[0][4]:
-                            symbol_volume = (i['symbol'], 100 / temp[0][5]*temp[1][5], temp[1][5] - temp[0][5])
-                            if 'MARKET' in i['info']['orderTypes']:
-                                usdt_volume_checker.append(symbol_volume)
+                            if temp[0][5] != 0 and temp[1][5] != 0:
+                                symbol_volume = (
+                                    i['symbol'], 100 / temp[0][5] * temp[1][5], temp[1][5] - temp[0][5])
+                                if 'MARKET' in i['info']['orderTypes']:
+                                    usdt_volume_checker.append(symbol_volume)
 
     usdt_volume_checker.sort(key=lambda x: -x[1])
     trading_coins = []
@@ -255,7 +258,7 @@ if __name__ == '__main__':
                 print('MACD_Signal: ' + str(MACD_signal_val.iloc[-1]))
                 print('')
                 bought = buy_check(i, rsi_val, MACD_diff_val,
-                        MACD_signal_val, stochast_k, stochast_d, df)
+                                   MACD_signal_val, stochast_k, stochast_d, df)
                 if bought:
                     buy(coin_to_trade[coin_length])
                 print('---------------------------------------')
