@@ -71,7 +71,7 @@ def sell_check(coin_name):
         print('%s__TRADING' % coin_name)
         print('')
         print('Balance     : $' +
-              str(bars[-1][4] * balance['free'][coin_name[:-5]]))
+              str(round(bars[-1][4] * balance['free'][coin_name[:-5]] , 2)))
         print('')
         print('Current ask : $' + str(sell_book['asks'][0][0]))
         print('')
@@ -79,6 +79,7 @@ def sell_check(coin_name):
         print('RSI_Val     : ' + str(rsi_val.iloc[-1]))
         print('Stochast_k  : ' + str(stochast_k.iloc[-1]))
         print('Stochast_b  : ' + str(stochast_d.iloc[-1]))
+        print('Volume      : ' + str(bars[-1][5]))
         print('')
         print('Profit_sell : $' + str(profit_sell_val))
         print('---------------------------------------')
