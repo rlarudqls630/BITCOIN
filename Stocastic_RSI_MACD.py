@@ -103,7 +103,7 @@ def possible_pump():
             if i['symbol'][0:3] != 'USD':
                 temp = binance.fetch_ohlcv(i['symbol'], interval, limit=3)
                 print('Checking ' + str(i['symbol']))
-                print(usdt_volume_checker)
+                pprint(usdt_volume_checker)
                 if len(temp) >= 3:
                     if temp[1][5] >= temp[0][5]:
                         if temp[0][1] >= temp[0][4] and temp[1][1] >= temp[0][4]:
