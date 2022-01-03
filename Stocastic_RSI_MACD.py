@@ -118,7 +118,7 @@ def possible_pump():
     priority_trading_coins = []
 
     for i in usdt_volume_checker:
-        if i[1] > 110:
+        if i[1] > 102:
             possible_trading_coins.append(i)
 
     possible_trading_coins.sort(key=lambda x: -x[2])
