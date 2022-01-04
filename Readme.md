@@ -22,3 +22,7 @@ Also, this program is not storing any crypto currency data to your personally pc
     - Since this program is using several repositories and using Binace crypto currency data to process, unexpected error might be raised and progrmam might terminate and we do not want that. This python file restarts main python file(Stocastic_RSI_MACD.py) to restart the program.
 5. Stocastic_RSI_MACD.py
     - This is the main program to find and trade crypto currencies. It uses two momentum indicator (RSI, Stocastic) and trend indecator (MACD). In crypto currency market, people tend to hope on to trad to gain profit. Momentum and trend indecator shows this very well. Therefore this program is using mentioned indecators.
+
+## How to make Baiance API key
+- Follow steps of provided link
+https://www.binance.com/en/support/faq/360002502072
