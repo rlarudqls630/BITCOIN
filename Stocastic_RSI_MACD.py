@@ -71,7 +71,7 @@ def sell_check(coin_name):
         print('%s__TRADING' % coin_name)
         print('')
         print('Balance     : $' +
-              str(round(bars[-1][4] * balance['free'][coin_name[:-5]] , 2)))
+              str(round(bars[-1][4] * balance['free'][coin_name[:-5]], 2)))
         print('')
         print('Current ask : $' + str(sell_book['asks'][0][0]))
         print('')
@@ -102,14 +102,15 @@ def possible_pump():
     for i in all_binance_market:
         if i['symbol'][-4:] == 'USDT':
             if i['symbol'][0:3] != 'USD':
-                temp = binance.fetch_ohlcv(i['symbol'], interval, limit=3)
+                temp = binance.fetch_ohlcv(i['symbol'], interval, limit=2)
+                temp2 = binance.fetch_ohlcv(i['symbol'], '1d', limit=2)
                 print('Checking ' + str(i['symbol']))
-                if len(temp) >= 3:
+                if len(temp) >= 2:
                     if temp[1][5] >= temp[0][5]:
-                        if temp[0][1] >= temp[0][4] and temp[1][1] >= temp[0][4]:
+                        if temp[0][1] >= temp[0][4] and temp[1][1] >= temp[1][4]:
                             if temp[0][5] != 0 and temp[1][5] != 0:
                                 symbol_volume = (
-                                    i['symbol'], 100 / temp[0][5] * temp[1][5], temp[1][5] - temp[0][5])
+                                    i['symbol'], 100 / temp2[0][5] * temp2[1][5], temp[1][5] - temp[0][5])
                                 if 'MARKET' in i['info']['orderTypes']:
                                     usdt_volume_checker.append(symbol_volume)
 
