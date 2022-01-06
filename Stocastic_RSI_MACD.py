@@ -103,14 +103,13 @@ def possible_pump():
         if i['symbol'][-4:] == 'USDT':
             if i['symbol'][0:3] != 'USD':
                 temp = binance.fetch_ohlcv(i['symbol'], interval, limit=2)
-                temp2 = binance.fetch_ohlcv(i['symbol'], '1d', limit=2)
                 print('Checking ' + str(i['symbol']))
                 if len(temp) >= 2:
                     if temp[1][5] >= temp[0][5]:
                         if temp[0][1] >= temp[0][4] and temp[1][1] >= temp[1][4]:
                             if temp[0][5] != 0 and temp[1][5] != 0:
                                 symbol_volume = (
-                                    i['symbol'], 100 / temp2[0][5] * temp2[1][5], temp[1][5] - temp[0][5])
+                                    i['symbol'], 100 / temp[0][5] * temp[1][5], temp[1][5] - temp[0][5])
                                 if 'MARKET' in i['info']['orderTypes']:
                                     usdt_volume_checker.append(symbol_volume)
 
@@ -119,7 +118,7 @@ def possible_pump():
     priority_trading_coins = []
 
     for i in usdt_volume_checker:
-        if i[1] > 105:
+        if i[1] > 100:
             possible_trading_coins.append(i)
 
     possible_trading_coins.sort(key=lambda x: -x[2])
