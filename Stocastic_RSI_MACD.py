@@ -106,13 +106,15 @@ def possible_pump():
                 temp = binance.fetch_ohlcv(i['symbol'], '1d', limit=2)
                 print('Checking ' + str(i['symbol']))
                 if len(temp) >= 2:
-                    symbol_volume = (
-                        i['symbol'], 100 / temp[0][4] * temp[1][4], temp[1][5])
-                    if 'MARKET' in i['info']['orderTypes']:
-                        usdt_volume_checker.append(symbol_volume)
+                    if temp[1][1] <= temp[1][4]:
+                        symbol_volume = (
+                            i['symbol'], 100 / temp[1][1] * temp[1][4], temp[1][5])
+                        if 'MARKET' in i['info']['orderTypes']:
+                            usdt_volume_checker.append(symbol_volume)
 
     usdt_volume_checker.sort(key=lambda x: -x[2])
-    usdt_volume_checker = usdt_volume_checker[0:100]
+    if len(usdt_volume_checker) >= 100:
+        usdt_volume_checker = usdt_volume_checker[0:100]
     usdt_volume_checker.sort(key=lambda x: -x[1])
 
     return usdt_volume_checker
