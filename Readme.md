@@ -25,7 +25,7 @@ ___
     - In order to properly get the trading messages to your phone(Slack), you should flow steps of */How to make Slack token/*.
 
 ## How to make Biance API key
-- Follow steps of theprovided link
+- Follow steps of the provided link
 - https://www.binance.com/en/support/faq/360002502072
 
 ## How to make Slack token
