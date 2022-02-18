@@ -251,12 +251,12 @@ if __name__ == '__main__':
                 Ichimoku_a = Ichimoku_indicator.ichimoku_a()
                 Ichimoku_b = Ichimoku_indicator.ichimoku_b()
                 Ichimoku_cloud = False
+                count = 0
                 for j in range(5):
                     if Ichimoku_a.iloc[j - 26] > Ichimoku_b.iloc[j - 26]:
                         count = 0
                 if count == 5:
                     Ichimoku_cloud = True
-                count = 0
 
                 print('---------------------------------------')
                 print(dt.now().strftime('%Y-%m-%d %H:%M:%S'))
