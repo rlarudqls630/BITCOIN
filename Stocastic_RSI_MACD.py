@@ -254,7 +254,7 @@ if __name__ == '__main__':
                 count = 0
                 for j in range(5):
                     if Ichimoku_a.iloc[j - 26] > Ichimoku_b.iloc[j - 26]:
-                        count = 0
+                        count = count + 1
                 if count == 5:
                     Ichimoku_cloud = True
 
