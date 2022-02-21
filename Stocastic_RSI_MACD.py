@@ -130,8 +130,20 @@ def buy(coin_name):
 
         orderbook = binance.fetch_order_book(coin_name)
 
-        binance.create_market_buy_order(
-            coin_name, bal / orderbook['bids'][0][0])
+        checker = True
+        amount = bal/orderbook['bids'][0][0]
+        drop_decimal = -1
+        while checker:
+            try:
+                binance.create_market_buy_order(
+                    coin_name, amount)
+            except:
+                amount = str(amount)
+                amount = amount[:drop_decimal]
+                amount = float(amount)
+                drop_decimal = drop_decimal - 1
+            finally:
+                checker = False
 
         time.sleep(2)
 
@@ -229,7 +241,7 @@ if __name__ == '__main__':
             bought = False
             while bought is False:
                 i = coin_to_trade[coin_length]
-                print(i)
+
                 bars = binance.fetch_ohlcv(i[0], interval, limit=200)
                 df = pd.DataFrame(
                     bars, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
@@ -271,6 +283,7 @@ if __name__ == '__main__':
                 print('')
                 bought = buy_check(i[0], rsi_val, MACD_diff_val,
                                    MACD_signal_val, stochast_k, stochast_d, Ichimoku_cloud, df)
+
                 if bought:
                     buy(i[0])
                 print('---------------------------------------')
