@@ -105,12 +105,12 @@ def possible_pump():
         if i['symbol'][-4:] == 'USDT':
             usd_checker = i['symbol'][:-4]
             if 'USD' not in usd_checker:
-                temp = binance.fetch_ohlcv(i['symbol'], '1d', limit=2)
+                temp = binance.fetch_ohlcv(i['symbol'], '1d')
                 print('Checking ' + str(i['symbol']))
                 if len(temp) >= 2:
-                    if temp[1][1] <= temp[1][4]:
+                    if temp[-1][1] <= temp[-1][4]:
                         symbol_volume = (
-                            i['symbol'], 100 / temp[1][1] * temp[1][4], temp[1][5])
+                            i['symbol'], 100 / temp[-1][1] * temp[-1][4], temp[-1][5])
                         if 'MARKET' in i['info']['orderTypes']:
                             usdt_volume_checker.append(symbol_volume)
 
