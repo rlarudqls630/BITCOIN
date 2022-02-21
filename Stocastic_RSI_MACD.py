@@ -229,7 +229,7 @@ if __name__ == '__main__':
             bought = False
             while bought is False:
                 i = coin_to_trade[coin_length]
-
+                print(i)
                 bars = binance.fetch_ohlcv(i[0], interval, limit=200)
                 df = pd.DataFrame(
                     bars, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
@@ -269,10 +269,10 @@ if __name__ == '__main__':
                 print('MACD_Signal: ' + str(MACD_signal_val.iloc[-1]))
                 print('Ichimoku   : ' + str(Ichimoku_cloud))
                 print('')
-                bought = buy_check(i, rsi_val, MACD_diff_val,
+                bought = buy_check(i[0], rsi_val, MACD_diff_val,
                                    MACD_signal_val, stochast_k, stochast_d, Ichimoku_cloud, df)
                 if bought:
-                    buy(i)
+                    buy(i[0])
                 print('---------------------------------------')
                 print('')
 
