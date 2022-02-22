@@ -144,7 +144,7 @@ def buy(coin_name):
                 drop_decimal = drop_decimal - 1
             else:
                 checker = False
-            time.sleep(1)
+            time.sleep(2)
 
         time.sleep(2)
 
