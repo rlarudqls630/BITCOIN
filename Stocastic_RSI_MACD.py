@@ -142,9 +142,9 @@ def buy(coin_name):
                 amount = amount[:drop_decimal]
                 amount = float(amount)
                 drop_decimal = drop_decimal - 1
-            finally:
+            else:
                 checker = False
-            time.sleep(2)
+            time.sleep(1)
 
         time.sleep(2)
 
