@@ -1,4 +1,0 @@
-<Binance API key>
-<Secret Binance API key>
-<Slack Token key>
-<Time interval>
