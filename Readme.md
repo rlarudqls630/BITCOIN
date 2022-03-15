@@ -1,4 +1,11 @@
 # Automated Crypto Currency Trader
+## Importatn notice
+- This project turns out to become a failutre, due to several reasons. 
+  
+  1. Not like stock market, crpyto market does not have specific financial statement to analize.
+  2. Due to lack of financial satment, only way to safely trade crypto currency is to use technical indicator such as Heikinashi, MACD, RSI, etc. However, all of these indicators are made to used in stock market not crypto currency market. Therefore, it is extremly unsafe to apply it to crypto currency market.
+  3. As a one man developer it is very hard to keep up with constatnly changing api of ccxt and Binance. Also, if there is an error, it is hard to fix it on the fly.
+- Provided reasons are the main reason why this project is a filure and terminated.
 ___
 ## Introduction
 - This program is devloped due to high interest in crypto currency market around the globe. It is possible to trade crypto currency manualy using apps, web GUI. However, human hand cannot match the speed of how fast crypto currencies are traded. Also, there are over 100 crypto currencies being traded and it is impossible to track all of them. This is why this program was written.
@@ -29,3 +36,6 @@ ___
 - https://www.binance.com/en/support/faq/360002502072
 
 ## How to make Slack token
+- Follow steps of the provided link 
+- https://slack.com/intl/ko-kr/help/articles/215770388-API-%ED%86%A0%ED%81%B0-%EC%83%9D%EC%84%B1-%EB%B0%8F-%EB%8B%A4%EC%8B%9C-%EC%83%9D%EC%84%B1#:~:text=Visit%20the%20App%20Directory%20at,use%20anywhere%20you%20need%20it.
+  
